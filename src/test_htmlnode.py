@@ -12,7 +12,7 @@ class TestHTMLNode(unittest.TestCase):
         node = HTMLNode("a", "link text", None, {"href": "https://www.google.com", "target": "_blank"})
         self.assertEqual(node.__repr__(), 'a: link text - props:  href="https://www.google.com" target="_blank" - children: None')
     
-    def test_inherits_values(self):
+    def test_gets_values_from_constructor(self):
         node = HTMLNode("a", "link text", None, {"href": "https://www.google.com", "target": "_blank"})
         self.assertEqual("a", node.tag)
         self.assertEqual("link text", node.value)
