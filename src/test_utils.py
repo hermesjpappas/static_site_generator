@@ -1,7 +1,7 @@
 import unittest
 from leafnode import LeafNode
 from textnode import TextNode
-from utils import text_node_to_html_node
+from utils import text_node_to_html_node, split_nodes_delimiter
 
 
 class TestTextNode(unittest.TestCase):
@@ -58,10 +58,62 @@ class TestTextNode(unittest.TestCase):
 
     def test_raises_exception_wrong_text_type(self):
         with self.assertRaisesRegex(Exception, "Invalid text node type"):
-          text_node = TextNode("sample text here", "random_type")
-          text_node_to_html_node(text_node)
+            text_node = TextNode("sample text here", "random_type")
+            text_node_to_html_node(text_node)
 
     def test_raises_exception_no_text_type(self):
         with self.assertRaisesRegex(Exception, "Invalid text node type"):
-          text_node = TextNode("sample text here", None)
-          text_node_to_html_node(text_node)
+            text_node = TextNode("sample text here", None)
+            text_node_to_html_node(text_node)
+
+    # tests for split_nodes_delimiter function
+    def test_returns_split_code_nodes(self):
+        node = TextNode("This is a text with a `code block` word", "text")
+        new_nodes = split_nodes_delimiter([node], "`", "code")
+        self.assertEqual(
+            [
+                TextNode("This is a text with a ", "text"),
+                TextNode("code block", "code"),
+                TextNode(" word", "text"),
+            ],
+            new_nodes,
+        )
+
+    def test_returns_split_bold_nodes(self):
+        node = TextNode("This is a text with a **bold block** word", "text")
+        new_nodes = split_nodes_delimiter([node], "**", "bold")
+        self.assertEqual(
+            [
+                TextNode("This is a text with a ", "text"),
+                TextNode("bold block", "bold"),
+                TextNode(" word", "text"),
+            ],
+            new_nodes,
+        )
+
+    def test_returns_split_italic_nodes(self):
+        node = TextNode("This is a text with an *italic block* word", "text")
+        new_nodes = split_nodes_delimiter([node], "*", "italic")
+        self.assertEqual(
+            [
+                TextNode("This is a text with an ", "text"),
+                TextNode("italic block", "italic"),
+                TextNode(" word", "text"),
+            ],
+            new_nodes,
+        )
+
+    def test_raises_exception_more_than_two_delimiters(self):
+        node = TextNode(
+            "This is a text with *italic block* unmatched * delimiters", "italic"
+        )
+        split_nodes_delimiter([node], "*", "italic")
+        self.assertRaises(Exception)
+
+    def test_raises_exception_less_than_two_delimiters(self):
+        node = TextNode(
+            "This is a text with *italic block unmatched delimiters", "italic"
+        )
+        split_nodes_delimiter([node], "*", "italic")
+        self.assertRaises(Exception)
+    
