@@ -27,20 +27,41 @@ def text_node_to_html_node(text_node):
         raise Exception("Invalid text node type")
 
 
+# def split_nodes_delimiter(old_nodes, delimiter, text_type):
+#     new_list = []
+#     for node in old_nodes:
+#         if node.text_type != "text":
+#             new_list.append(node)
+#         else:
+#             if node.text.count(delimiter) != 2:
+#                 raise Exception("More or less than two delimiters given")
+#             else:
+#                 text_list = node.text.split(delimiter)
+#                 new_list.append(TextNode(text_list[0], "text"))
+#                 new_list.append(TextNode(text_list[1], text_type))
+#                 new_list.append(TextNode(text_list[2], "text"))
+#     return new_list
+
+
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
-    new_list = []
-    for node in old_nodes:
-        if node.text_type != "text":
-            new_list.append(node)
-        else:
-            if node.text.count(delimiter) != 2:
-                raise Exception("More or less than two delimiters given")
+    new_nodes = []
+    for old_node in old_nodes:
+        if old_node.text_type != "text":
+            new_nodes.append(old_node)
+            continue
+        split_nodes = []
+        sections = old_node.text.split(delimiter)
+        if len(sections) % 2 == 0:
+            raise ValueError("Invalid markdown, formatted section not closed")
+        for i in range(len(sections)):
+            if sections[i] == "":
+                continue
+            if i % 2 == 0:
+                split_nodes.append(TextNode(sections[i], "text"))
             else:
-                text_list = node.text.split(delimiter)
-                new_list.append(TextNode(text_list[0], "text"))
-                new_list.append(TextNode(text_list[1], text_type))
-                new_list.append(TextNode(text_list[2], "text"))
-    return new_list
+                split_nodes.append(TextNode(sections[i], text_type))
+        new_nodes.extend(split_nodes)
+    return new_nodes
 
 
 def extract_markdown_images(text):
@@ -53,6 +74,7 @@ def extract_markdown_images(text):
 
     return return_list
 
+
 def extract_markdown_links(text):
     return_list = []
     matches = re.findall(r"(?<!!)\[.+?\]\(.+?\)", text)
@@ -62,4 +84,3 @@ def extract_markdown_links(text):
         return_list.append((link_text, link))
 
     return return_list
-

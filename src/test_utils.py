@@ -108,6 +108,19 @@ class TestTextNode(unittest.TestCase):
             new_nodes,
         )
 
+    def test_handles_more_than_one_inner_block(self):
+        node = TextNode("This is a text with **two** bold **words**", "text")
+        new_nodes = split_nodes_delimiter([node], "**", "bold")
+        self.assertEqual(
+            [
+                TextNode("This is a text with ", "text"),
+                TextNode("two", "bold"),
+                TextNode(" bold ", "text"),
+                TextNode("words", "bold"),
+            ],
+            new_nodes
+        )
+
     def test_raises_exception_more_than_two_delimiters(self):
         node = TextNode(
             "This is a text with *italic block* unmatched * delimiters", "italic"
