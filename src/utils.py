@@ -26,8 +26,10 @@ def text_node_to_html_node(text_node):
     else:
         raise Exception("Invalid text node type")
 
-# NOTE: Current implementations rely on the string not beginning with 
+
+# NOTE: Current implementations rely on the string not beginning with
 # a delimiter or with an image/link. Could be improved further
+
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     new_nodes = []
@@ -94,9 +96,12 @@ def split_nodes_image(old_nodes):
                 split_nodes.append(TextNode(sections[i], "text"))
             else:
                 image_list = extract_markdown_images(sections[i])
-                split_nodes.append(TextNode(image_list[0][0], "image", image_list[0][1]))
+                split_nodes.append(
+                    TextNode(image_list[0][0], "image", image_list[0][1])
+                )
         new_nodes.extend(split_nodes)
     return new_nodes
+
 
 def split_nodes_link(old_nodes):
     new_nodes = []
@@ -123,3 +128,15 @@ def split_nodes_link(old_nodes):
                 split_nodes.append(TextNode(image_list[0][0], "link", image_list[0][1]))
         new_nodes.extend(split_nodes)
     return new_nodes
+
+
+def text_to_textnodes(text):
+    old_nodes = [TextNode(text, "text")]
+
+    bold_nodes = split_nodes_delimiter([old_nodes], "**", "bold")
+    italic_nodes = split_nodes_delimiter([bold_nodes], "*", "italic")
+    code_nodes = split_nodes_delimiter([italic_nodes], "`", "code")
+    image_nodes = split_nodes_image([code_nodes])
+    link_nodes = split_nodes_link([image_nodes])
+
+    return link_nodes
