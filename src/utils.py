@@ -94,7 +94,7 @@ def split_nodes_image(old_nodes):
                 split_nodes.append(TextNode(sections[i], "text"))
             else:
                 image_list = extract_markdown_images(sections[i])
-                split_nodes.append(TextNode(image_list[0][0], "link", image_list[0][1]))
+                split_nodes.append(TextNode(image_list[0][0], "image", image_list[0][1]))
         new_nodes.extend(split_nodes)
     return new_nodes
 

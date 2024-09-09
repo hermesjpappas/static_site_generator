@@ -184,10 +184,10 @@ class TestTextNode(unittest.TestCase):
             new_nodes,
             [
                 TextNode("This is text with an image link ", "text"),
-                TextNode("to boot dev", "link", "https://www.boot.dev/image.png"),
+                TextNode("to boot dev", "image", "https://www.boot.dev/image.png"),
                 TextNode(" and ", "text"),
                 TextNode(
-                    "to youtube", "link", "https://www.youtube.com/@bootdotdev/something.png"
+                    "to youtube", "image", "https://www.youtube.com/@bootdotdev/something.png"
                 ),
             ],
         )
