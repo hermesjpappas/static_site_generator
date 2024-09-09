@@ -1,7 +1,12 @@
 import unittest
 from leafnode import LeafNode
 from textnode import TextNode
-from utils import text_node_to_html_node, split_nodes_delimiter
+from utils import (
+    text_node_to_html_node,
+    split_nodes_delimiter,
+    extract_markdown_images,
+    extract_markdown_links,
+)
 
 
 class TestTextNode(unittest.TestCase):
@@ -116,4 +121,39 @@ class TestTextNode(unittest.TestCase):
         )
         split_nodes_delimiter([node], "*", "italic")
         self.assertRaises(Exception)
-    
+
+    # test extract_markdown_images
+    def test_returns_markdown_images(self):
+        text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
+        result = extract_markdown_images(text)
+        self.assertEqual(
+            result,
+            [
+                ("rick roll", "https://i.imgur.com/aKaOqIh.gif"),
+                ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg"),
+            ],
+        )
+
+    def test_returns_empty_array_for_no_images(self):
+        text = "This is some text with no images. ![] blah ()"
+        result = extract_markdown_images(text)
+        self.assertEqual(result, [])
+
+    # test extract_markdown_links
+    def test_returns_list_of_markdown_links(self):
+        text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev) blah"
+        result = extract_markdown_links(text)
+        self.assertEqual(
+            result,
+            [
+                ("to boot dev", "https://www.boot.dev"),
+                ("to youtube", "https://www.youtube.com/@bootdotdev"),
+            ],
+        )
+
+    def test_does_not_extract_images(self):
+        text = "This is text with a link ![to boot dev](https://www.boot.dev/blah.png) and [to youtube](https://www.youtube.com/@bootdotdev) blah"
+        result = extract_markdown_links(text)
+        self.assertEqual(
+            result, [("to youtube", "https://www.youtube.com/@bootdotdev")]
+        )
