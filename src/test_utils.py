@@ -254,3 +254,13 @@ class TestTextNode(unittest.TestCase):
                 TextNode("link", "link", "https://boot.dev"),
             ],
         )
+    
+    def test_txt_to_nodes_works_with_only_text(self):
+        text = "This is just plain text."
+        new_nodes = text_to_textnodes(text)
+        self.assertEqual(
+            new_nodes,
+            [
+                TextNode("This is just plain text.", "text")
+            ]
+        )
