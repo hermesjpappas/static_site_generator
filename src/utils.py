@@ -141,6 +141,20 @@ def text_to_textnodes(text):
 
     return link_nodes
 
+
 def markdown_to_blocks(markdown):
-    blocks = markdown.split('\n\n')
+    blocks = markdown.split("\n\n")
     return list(map(lambda x: x.strip(), blocks))
+
+
+def block_to_block_type(block):
+    if re.match(r"^\#{1,6}\s", block):
+        return "heading"
+    if re.match(r"^\`{3}(.|\n)+\`{3}$", block):
+        return "code"
+    if re.match(r"^\>(.*\n*)+$", block):
+        return "quote"
+    if re.match(r"^(\*|\-)\s(.*\n*)+$", block):
+        return "unordered_list"
+    else:
+        raise Exception("Block not recognized")

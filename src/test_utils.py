@@ -10,6 +10,7 @@ from utils import (
     split_nodes_link,
     text_to_textnodes,
     markdown_to_blocks,
+    block_to_block_type,
 )
 
 
@@ -299,9 +300,59 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
     def test_mkd_to_blk_one_block(self):
         text = "       This is only one line."
         blocks = markdown_to_blocks(text)
-        self.assertEqual(
-            blocks,
-            [
-                "This is only one line."
-            ]
-        )
+        self.assertEqual(blocks, ["This is only one line."])
+
+    # test block to block type
+    def test_block_to_block_recognizes_heading(self):
+        heading1 = "# I am a heading"
+        self.assertEqual(block_to_block_type(heading1), "heading")
+        heading2 = "## I am a heading"
+        self.assertEqual(block_to_block_type(heading2), "heading")
+        heading3 = "### I am a heading"
+        self.assertEqual(block_to_block_type(heading3), "heading")
+        heading4 = "#### I am a heading"
+        self.assertEqual(block_to_block_type(heading4), "heading")
+        heading5 = "##### I am a heading"
+        self.assertEqual(block_to_block_type(heading5), "heading")
+        heading6 = "###### I am a heading"
+        self.assertEqual(block_to_block_type(heading6), "heading")
+
+    def test_block_to_block_recognizes_code(self):
+        code = "```something```"
+        self.assertEqual(block_to_block_type(code), "code")
+        code2 = """```
+          code here
+          ```"""
+        self.assertEqual(block_to_block_type(code2), "code")
+    
+    def test_block_to_block_rejects_bad_code(self):
+        with self.assertRaisesRegex(Exception, "Block not recognized"):
+          code3 = "``something`"
+          block_to_block_type(code3)
+
+    def test_block_to_block_recognizes_quote(self):
+        quote = ">Hello this is a quote."
+        self.assertEqual(block_to_block_type(quote), "quote")
+        quote2 = """>Hello this is a 
+        >multiline quote.
+        >blah"""
+        self.assertEqual(block_to_block_type(quote2), "quote")
+        quote3 = """>Hello this is
+        an invalid quote
+        >blah"""
+        block_to_block_type(quote3)
+        self.assertRaisesRegex(Exception, "Block not recognized")
+
+    def test_block_to_block_recognizes_unordered_list(self):
+        ul = "* Something"
+        self.assertEqual(block_to_block_type(ul), "unordered_list")
+        ul2 = "- Something"
+        self.assertEqual(block_to_block_type(ul2), "unordered_list")
+        ul3 = """* Something
+        * Something else
+        """
+        self.assertEqual(block_to_block_type(ul3), "unordered_list")
+        ul4 = """- Something
+        - Something else
+        """
+        self.assertEqual(block_to_block_type(ul4), "unordered_list")
