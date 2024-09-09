@@ -26,22 +26,8 @@ def text_node_to_html_node(text_node):
     else:
         raise Exception("Invalid text node type")
 
-
-# def split_nodes_delimiter(old_nodes, delimiter, text_type):
-#     new_list = []
-#     for node in old_nodes:
-#         if node.text_type != "text":
-#             new_list.append(node)
-#         else:
-#             if node.text.count(delimiter) != 2:
-#                 raise Exception("More or less than two delimiters given")
-#             else:
-#                 text_list = node.text.split(delimiter)
-#                 new_list.append(TextNode(text_list[0], "text"))
-#                 new_list.append(TextNode(text_list[1], text_type))
-#                 new_list.append(TextNode(text_list[2], "text"))
-#     return new_list
-
+# NOTE: Current implementations rely on the string not beginning with 
+# a delimiter or with an image/link. Could be improved further
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     new_nodes = []
@@ -84,3 +70,52 @@ def extract_markdown_links(text):
         return_list.append((link_text, link))
 
     return return_list
+
+
+def split_nodes_image(old_nodes):
+    new_nodes = []
+    image_regex = r"(!\[.+?\]\(.+?\))"
+    for old_node in old_nodes:
+        if old_node.text_type != "text":
+            new_nodes.append(old_node)
+            continue
+        matches = re.findall(image_regex, old_node.text)
+        if len(matches) == 0:
+            new_nodes.append(old_node)
+            continue
+        split_nodes = []
+        sections = re.split(image_regex, old_node.text)
+        for i in range(len(sections)):
+            if sections[i] == "":
+                continue
+            if i % 2 == 0:
+                split_nodes.append(TextNode(sections[i], "text"))
+            else:
+                image_list = extract_markdown_images(sections[i])
+                split_nodes.append(TextNode(image_list[0][0], "link", image_list[0][1]))
+        new_nodes.extend(split_nodes)
+    return new_nodes
+
+def split_nodes_link(old_nodes):
+    new_nodes = []
+    link_regex = r"((?<!!)\[.+?\]\(.+?\))"
+    for old_node in old_nodes:
+        if old_node.text_type != "text":
+            new_nodes.append(old_node)
+            continue
+        matches = re.findall(link_regex, old_node.text)
+        if len(matches) == 0:
+            new_nodes.append(old_node)
+            continue
+        split_nodes = []
+        sections = re.split(link_regex, old_node.text)
+        for i in range(len(sections)):
+            if sections[i] == "":
+                continue
+            if i % 2 == 0:
+                split_nodes.append(TextNode(sections[i], "text"))
+            else:
+                image_list = extract_markdown_links(sections[i])
+                split_nodes.append(TextNode(image_list[0][0], "link", image_list[0][1]))
+        new_nodes.extend(split_nodes)
+    return new_nodes

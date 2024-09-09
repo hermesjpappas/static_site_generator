@@ -6,6 +6,8 @@ from utils import (
     split_nodes_delimiter,
     extract_markdown_images,
     extract_markdown_links,
+    split_nodes_image,
+    split_nodes_link
 )
 
 
@@ -118,7 +120,7 @@ class TestTextNode(unittest.TestCase):
                 TextNode(" bold ", "text"),
                 TextNode("words", "bold"),
             ],
-            new_nodes
+            new_nodes,
         )
 
     def test_raises_exception_more_than_two_delimiters(self):
@@ -169,4 +171,62 @@ class TestTextNode(unittest.TestCase):
         result = extract_markdown_links(text)
         self.assertEqual(
             result, [("to youtube", "https://www.youtube.com/@bootdotdev")]
+        )
+
+    # test split_nodes_image
+    def test_img_split_works_with_images(self):
+        node = TextNode(
+            "This is text with an image link ![to boot dev](https://www.boot.dev/image.png) and ![to youtube](https://www.youtube.com/@bootdotdev/something.png)",
+            "text",
+        )
+        new_nodes = split_nodes_image([node])
+        self.assertEqual(
+            new_nodes,
+            [
+                TextNode("This is text with an image link ", "text"),
+                TextNode("to boot dev", "link", "https://www.boot.dev/image.png"),
+                TextNode(" and ", "text"),
+                TextNode(
+                    "to youtube", "link", "https://www.youtube.com/@bootdotdev/something.png"
+                ),
+            ],
+        )
+    def test_img_split_works_with_no_image_links(self):
+        node = TextNode("This is text with no links.", "text")
+        new_nodes = split_nodes_image([node])
+        self.assertEqual(
+            new_nodes,
+            [
+                TextNode("This is text with no links.", "text")
+            ]
+        )
+
+    # test split_nodes_link
+
+    def test_link_split_works_with_links(self):
+      node = TextNode(
+            "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+            "text",
+        )
+      new_nodes = split_nodes_link([node])
+      self.assertEqual(
+            new_nodes,
+            [
+                TextNode("This is text with a link ", "text"),
+                TextNode("to boot dev", "link", "https://www.boot.dev"),
+                TextNode(" and ", "text"),
+                TextNode(
+                    "to youtube", "link", "https://www.youtube.com/@bootdotdev"
+                ),
+            ],
+        )
+    
+    def test_link_works_with_no_links(self):
+       node = TextNode("This is text with no links.", "text")
+       new_nodes = split_nodes_link([node])
+       self.assertEqual(
+            new_nodes,
+            [
+                TextNode("This is text with no links.", "text")
+            ]
         )
