@@ -156,5 +156,7 @@ def block_to_block_type(block):
         return "quote"
     if re.match(r"^(\*|\-)\s(.*\n*)+$", block):
         return "unordered_list"
+    if re.match(r"^\d+\.\s(.*\n*)+$", block):
+        return "ordered_list"
     else:
-        raise Exception("Block not recognized")
+        return "paragraph"

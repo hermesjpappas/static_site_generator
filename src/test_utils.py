@@ -325,10 +325,6 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
           ```"""
         self.assertEqual(block_to_block_type(code2), "code")
     
-    def test_block_to_block_rejects_bad_code(self):
-        with self.assertRaisesRegex(Exception, "Block not recognized"):
-          code3 = "``something`"
-          block_to_block_type(code3)
 
     def test_block_to_block_recognizes_quote(self):
         quote = ">Hello this is a quote."
@@ -337,12 +333,7 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
         >multiline quote.
         >blah"""
         self.assertEqual(block_to_block_type(quote2), "quote")
-        quote3 = """>Hello this is
-        an invalid quote
-        >blah"""
-        block_to_block_type(quote3)
-        self.assertRaisesRegex(Exception, "Block not recognized")
-
+    
     def test_block_to_block_recognizes_unordered_list(self):
         ul = "* Something"
         self.assertEqual(block_to_block_type(ul), "unordered_list")
@@ -356,3 +347,8 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
         - Something else
         """
         self.assertEqual(block_to_block_type(ul4), "unordered_list")
+    
+    def test_block_to_block_recognizes_ordered_list(self):
+        ol = """1. Something
+        2. Something else"""
+        self.assertEqual(block_to_block_type(ol), "ordered_list")
