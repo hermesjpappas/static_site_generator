@@ -278,6 +278,24 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
             ],
         )
 
+    def test_mkd_to_blk_splits_strings_and_strips(self):
+        text = """# This is a heading        
+
+   This is a paragraph of text. It has some **bold** and *italic* words inside of it.
+
+    * This is the first list item in a list block
+* This is a list item
+* This is another list item     """
+        blocks = markdown_to_blocks(text)
+        self.assertEqual(
+            blocks,
+            [
+                "# This is a heading",
+                "This is a paragraph of text. It has some **bold** and *italic* words inside of it.",
+                "* This is the first list item in a list block\n* This is a list item\n* This is another list item",
+            ],
+        )
+
     def test_mkd_to_blk_one_block(self):
         text = "This is only one line."
         blocks = markdown_to_blocks(text)
