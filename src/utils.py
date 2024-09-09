@@ -171,13 +171,20 @@ def block_to_block_type(block):
     if re.match(r"^\d+\.\s", block):
         lines = block.split("\n")
         valid_lines = []
-        # TODO: Maybe range instead of lines so we have the numbers?
         for line in lines:
             if line.strip() == "":
                 continue
-            # TODO: Check if lines are incrementing by 1
-            if not re.match(r"^\d+\.\s", line.strip()):
+            else:
+                valid_lines.append(line)
+
+        for i in range(0, len(valid_lines)):
+            if not re.match(r"^\d+\.\s", valid_lines[i].strip()):
                 return "paragraph"
+            if i > 0:
+                num = int(valid_lines[i].split(".")[0])
+                prev_num = int(valid_lines[i - 1].split(".")[0])
+                if num != prev_num + 1:
+                    return "paragraph"
         return "ordered_list"
     else:
         return "paragraph"

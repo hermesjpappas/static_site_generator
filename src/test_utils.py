@@ -372,3 +372,6 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
         but not here
         4. And then here"""
         self.assertEqual(block_to_block_type(ol), "paragraph")
+        ol2 = """1. Something here
+        3. Suddenly three!"""
+        self.assertEqual(block_to_block_type(ol2), "paragraph")
