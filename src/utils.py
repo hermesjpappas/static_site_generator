@@ -140,3 +140,7 @@ def text_to_textnodes(text):
     link_nodes = split_nodes_link(image_nodes)
 
     return link_nodes
+
+def markdown_to_blocks(markdown):
+    blocks = markdown.split('\n\n')
+    return blocks

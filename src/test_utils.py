@@ -9,6 +9,7 @@ from utils import (
     split_nodes_image,
     split_nodes_link,
     text_to_textnodes,
+    markdown_to_blocks,
 )
 
 
@@ -247,20 +248,42 @@ class TestTextNode(unittest.TestCase):
                 TextNode(" word and a ", "text"),
                 TextNode("code block", "code"),
                 TextNode(" and an ", "text"),
-                TextNode(
-                    "obi wan image", "image", "https://i.imgur.com/fJRm4Vk.jpeg"
-                ),
+                TextNode("obi wan image", "image", "https://i.imgur.com/fJRm4Vk.jpeg"),
                 TextNode(" and a ", "text"),
                 TextNode("link", "link", "https://boot.dev"),
             ],
         )
-    
+
     def test_txt_to_nodes_works_with_only_text(self):
         text = "This is just plain text."
         new_nodes = text_to_textnodes(text)
+        self.assertEqual(new_nodes, [TextNode("This is just plain text.", "text")])
+
+    # test markdown to blocks
+    def test_mkd_to_blk_splits_strings(self):
+        text = """# This is a heading
+
+This is a paragraph of text. It has some **bold** and *italic* words inside of it.
+
+* This is the first list item in a list block
+* This is a list item
+* This is another list item"""
+        blocks = markdown_to_blocks(text)
         self.assertEqual(
-            new_nodes,
+            blocks,
             [
-                TextNode("This is just plain text.", "text")
+                "# This is a heading",
+                "This is a paragraph of text. It has some **bold** and *italic* words inside of it.",
+                "* This is the first list item in a list block\n* This is a list item\n* This is another list item",
+            ],
+        )
+
+    def test_mkd_to_blk_one_block(self):
+        text = "This is only one line."
+        blocks = markdown_to_blocks(text)
+        self.assertEqual(
+            blocks,
+            [
+                "This is only one line."
             ]
         )
