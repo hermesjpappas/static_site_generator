@@ -143,4 +143,4 @@ def text_to_textnodes(text):
 
 def markdown_to_blocks(markdown):
     blocks = markdown.split('\n\n')
-    return blocks
+    return list(map(lambda x: x.strip(), blocks))
