@@ -152,11 +152,32 @@ def block_to_block_type(block):
         return "heading"
     if re.match(r"^\`{3}(.|\n)+\`{3}$", block):
         return "code"
-    if re.match(r"^\>(.*\n*)+$", block):
+    if re.match(r"^\>", block):
+        lines = block.split("\n")
+        for line in lines:
+            if line.strip() == "":
+                continue
+            if not re.match(r"^\>", line.strip()):
+                return "paragraph"
         return "quote"
-    if re.match(r"^(\*|\-)\s(.*\n*)+$", block):
+    if re.match(r"^(\*|\-)\s", block):
+        lines = block.split("\n")
+        for line in lines:
+            if line.strip() == "":
+                continue
+            if not re.match(r"^(\*|\-)\s", line.strip()):
+                return "paragraph"
         return "unordered_list"
-    if re.match(r"^\d+\.\s(.*\n*)+$", block):
+    if re.match(r"^\d+\.\s", block):
+        lines = block.split("\n")
+        valid_lines = []
+        # TODO: Maybe range instead of lines so we have the numbers?
+        for line in lines:
+            if line.strip() == "":
+                continue
+            # TODO: Check if lines are incrementing by 1
+            if not re.match(r"^\d+\.\s", line.strip()):
+                return "paragraph"
         return "ordered_list"
     else:
         return "paragraph"

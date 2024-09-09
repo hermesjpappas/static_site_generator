@@ -352,3 +352,23 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
         ol = """1. Something
         2. Something else"""
         self.assertEqual(block_to_block_type(ol), "ordered_list")
+        ol2 = "1. Something"
+        self.assertEqual(block_to_block_type(ol2), "ordered_list")
+
+    def test_block_to_block_rejects_bad_examples(self):
+        heading = "#nospace"
+        self.assertEqual(block_to_block_type(heading), "paragraph") 
+        code = "``code bad code `"
+        self.assertEqual(block_to_block_type(code), "paragraph") 
+        quote = """>Bad quote starts
+        but does not continue"""
+        self.assertEqual(block_to_block_type(quote), "paragraph")
+        ul = """* Something here
+        not here
+        * something here again"""
+        self.assertEqual(block_to_block_type(ul), "paragraph")
+        ol = """1. Something here
+        2. Something here as well
+        but not here
+        4. And then here"""
+        self.assertEqual(block_to_block_type(ol), "paragraph")
