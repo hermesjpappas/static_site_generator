@@ -297,7 +297,7 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
         )
 
     def test_mkd_to_blk_one_block(self):
-        text = "This is only one line."
+        text = "       This is only one line."
         blocks = markdown_to_blocks(text)
         self.assertEqual(
             blocks,
