@@ -201,6 +201,14 @@ class TestTextNode(unittest.TestCase):
             ]
         )
 
+    def test_img_split_doesnt_add_empty_text_nodes(self):
+        node = TextNode("", "text")
+        new_nodes = split_nodes_image([node])
+        self.assertEqual(
+            new_nodes,
+            []
+        )
+
     # test split_nodes_link
 
     def test_link_split_works_with_links(self):
@@ -229,4 +237,12 @@ class TestTextNode(unittest.TestCase):
             [
                 TextNode("This is text with no links.", "text")
             ]
+        )
+       
+    def test_link_split_doesnt_add_empty_text_nodes(self):
+        node = TextNode("", "text")
+        new_nodes = split_nodes_link([node])
+        self.assertEqual(
+            new_nodes,
+            []
         )

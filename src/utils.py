@@ -79,6 +79,8 @@ def split_nodes_image(old_nodes):
         if old_node.text_type != "text":
             new_nodes.append(old_node)
             continue
+        if old_node.text == "":
+            continue
         matches = re.findall(image_regex, old_node.text)
         if len(matches) == 0:
             new_nodes.append(old_node)
@@ -102,6 +104,8 @@ def split_nodes_link(old_nodes):
     for old_node in old_nodes:
         if old_node.text_type != "text":
             new_nodes.append(old_node)
+            continue
+        if old_node.text == "":
             continue
         matches = re.findall(link_regex, old_node.text)
         if len(matches) == 0:
