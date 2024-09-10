@@ -1,5 +1,6 @@
 from leafnode import LeafNode
 from textnode import TextNode
+from parentnode import ParentNode
 import re
 
 
@@ -188,3 +189,41 @@ def block_to_block_type(block):
         return "ordered_list"
     else:
         return "paragraph"
+
+
+def block_to_html_node(block):
+    block_type = block_to_block_type(block)
+    if block_type == "quote":
+        text = ""
+        lines = block.split("\n")
+        for line in lines:
+            if line.strip() == "":
+                continue
+            text += line.replace(">", "").strip() + " "
+        text = text.strip()
+        return LeafNode("blockquote", text, None)
+
+    elif block_type == "unordered_list":
+        lines = block.split("\n")
+        li_list = []
+        for line in lines:
+            if line.strip() == "":
+                continue
+            if line.strip().startswith("*"):
+                text = line.strip().replace("* ", "")
+                li_list.append(LeafNode("li", text, None))
+            elif line.strip().startswith("-"):
+                text = line.strip().replace("- ", "")
+                li_list.append(LeafNode("li", text, None))
+        return ParentNode("ul", li_list, None)
+
+    elif block_type == "ordered_list":
+        lines = block.split("\n")
+        li_list = []
+        for line in lines:
+            if line.strip() == "":
+                continue
+            text = line.strip()
+            text = re.sub(r"\d+\.\s", "", text)
+            li_list.append(LeafNode("li", text, None))
+        return ParentNode("ol", li_list, None)

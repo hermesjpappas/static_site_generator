@@ -7,6 +7,12 @@ class LeafNode(HTMLNode):
             raise ValueError
         super().__init__(tag, value, None, props)
 
+    def __eq__(self, other):
+      if(self.tag == other.tag and self.value == other.value and self.props == other.props):
+        return True
+      else:
+        return False
+
     def to_html(self):
         if self.tag == None:
             return self.value

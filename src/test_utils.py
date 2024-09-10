@@ -1,6 +1,7 @@
 import unittest
 from leafnode import LeafNode
 from textnode import TextNode
+from parentnode import ParentNode
 from utils import (
     text_node_to_html_node,
     split_nodes_delimiter,
@@ -11,6 +12,7 @@ from utils import (
     text_to_textnodes,
     markdown_to_blocks,
     block_to_block_type,
+    block_to_html_node,
 )
 
 
@@ -324,7 +326,6 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
           code here
           ```"""
         self.assertEqual(block_to_block_type(code2), "code")
-    
 
     def test_block_to_block_recognizes_quote(self):
         quote = ">Hello this is a quote."
@@ -333,7 +334,7 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
         >multiline quote.
         >blah"""
         self.assertEqual(block_to_block_type(quote2), "quote")
-    
+
     def test_block_to_block_recognizes_unordered_list(self):
         ul = "* Something"
         self.assertEqual(block_to_block_type(ul), "unordered_list")
@@ -347,7 +348,7 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
         - Something else
         """
         self.assertEqual(block_to_block_type(ul4), "unordered_list")
-    
+
     def test_block_to_block_recognizes_ordered_list(self):
         ol = """1. Something
         2. Something else"""
@@ -357,9 +358,9 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
 
     def test_block_to_block_rejects_bad_examples(self):
         heading = "#nospace"
-        self.assertEqual(block_to_block_type(heading), "paragraph") 
+        self.assertEqual(block_to_block_type(heading), "paragraph")
         code = "``code bad code `"
-        self.assertEqual(block_to_block_type(code), "paragraph") 
+        self.assertEqual(block_to_block_type(code), "paragraph")
         quote = """>Bad quote starts
         but does not continue"""
         self.assertEqual(block_to_block_type(quote), "paragraph")
@@ -375,3 +376,48 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
         ol2 = """1. Something here
         3. Suddenly three!"""
         self.assertEqual(block_to_block_type(ol2), "paragraph")
+
+    # test block_to_html_node
+    def test_block_to_html_returns_blockquote(self):
+        block = """>This is a quote
+        >with multiple lines.
+        """
+        self.assertEqual(
+            block_to_html_node(block),
+            LeafNode("blockquote", "This is a quote with multiple lines.", None),
+        )
+
+    def test_block_to_html_returns_unordered_list(self):
+        block = """* Some item here
+        * Some item there
+        """
+        parentNode = ParentNode(
+            "ul",
+            [LeafNode("li", "Some item here"), LeafNode("li", "Some item there")],
+            None,
+        )
+        self.assertEqual(block_to_html_node(block), parentNode)
+        block2 = """- Some item here
+        - Some item there
+        """
+        parentNode = ParentNode(
+            "ul",
+            [LeafNode("li", "Some item here"), LeafNode("li", "Some item there")],
+            None,
+        )
+        self.assertEqual(block_to_html_node(block2), parentNode)
+
+    def test_block_to_html_returns_ordered_list(self):
+        block = """1. Item here
+        2. Item there
+        3. Item further
+        """
+        parentNode = ParentNode(
+            "ol",
+            [
+                LeafNode("li", "Item here"),
+                LeafNode("li", "Item there"),
+                LeafNode("li", "Item further"),
+            ],
+        )
+        self.assertEqual(block_to_html_node(block), parentNode)
