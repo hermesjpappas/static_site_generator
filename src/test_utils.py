@@ -457,10 +457,11 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
         self.assertEqual(
             block_to_html_node(block6), LeafNode("h6", "I am an h6 heading")
         )
-        # block7 = ("####### I am a false h7 heading",)
-        # self.assertEqual(
-        #     block_to_html_node(block7).to_html(), "<p>####### I am a false h7 heading</p>"
-        # )
+        block7 = "####### I am a false h7 heading"
+        self.assertEqual(
+            block_to_html_node(block7),
+            ParentNode("p", [LeafNode(None, "####### I am a false h7 heading")]),
+        )
 
     def test_block_to_html_creates_proper_paragraphs(self):
         block = "I am a paragraph with **bold** and *italic* words"
@@ -485,3 +486,25 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
         )
         self.assertEqual(block_to_html_node(block2), parentNode2)
 
+        block3 = "I am a paragraph with [a link](http://google.com), an image ![image alt text](http://google.com/image.png), some **bold** text and some *italic* text, as well as some `inline code` for good measure."
+        parentNode3 = ParentNode(
+            "p",
+            [
+                LeafNode(None, "I am a paragraph with "),
+                LeafNode("a", "a link", {"href": "http://google.com"}),
+                LeafNode(None, ", an image "),
+                LeafNode(
+                    "img",
+                    "",
+                    {"src": "http://google.com/image.png", "alt": "image alt text"},
+                ),
+                LeafNode(None, ", some "),
+                LeafNode("b", "bold"),
+                LeafNode(None, " text and some "),
+                LeafNode("i", "italic"),
+                LeafNode(None, " text, as well as some "),
+                LeafNode("code", "inline code"),
+                LeafNode(None, " for good measure."),
+            ],
+        )
+        self.assertEqual(block_to_html_node(block3), parentNode3)

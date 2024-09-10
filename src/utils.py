@@ -244,3 +244,11 @@ def block_to_html_node(block):
         text_nodes = text_to_textnodes(block)
         html_nodes = list(map(text_node_to_html_node, text_nodes))
         return ParentNode("p", html_nodes)
+
+
+def markdown_to_html_node(markdown):
+    blocks = markdown_to_blocks(markdown)
+    children = []
+    for block in blocks:
+        children.append(block_to_html_node(block))
+    return ParentNode("div", children)
