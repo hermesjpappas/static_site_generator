@@ -144,6 +144,7 @@ def text_to_textnodes(text):
 
 
 def markdown_to_blocks(markdown):
+    # TODO: Find if there is a better way to split with interim line
     blocks = markdown.split("\n\n")
     return list(map(lambda x: x.strip(), blocks))
 
@@ -199,7 +200,7 @@ def block_to_html_node(block):
         for line in lines:
             if line.strip() == "":
                 continue
-            text += line.replace(">", "").strip() + " "
+            text += line.replace(">", "").strip() + "\n"
         text = text.strip()
         return LeafNode("blockquote", text, None)
 

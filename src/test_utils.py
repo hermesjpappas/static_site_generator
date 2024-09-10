@@ -13,6 +13,7 @@ from utils import (
     markdown_to_blocks,
     block_to_block_type,
     block_to_html_node,
+    markdown_to_html_node,
 )
 
 
@@ -384,7 +385,7 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
         """
         self.assertEqual(
             block_to_html_node(block),
-            LeafNode("blockquote", "This is a quote with multiple lines.", None),
+            LeafNode("blockquote", "This is a quote\nwith multiple lines.", None),
         )
 
     def test_block_to_html_returns_unordered_list(self):
@@ -508,3 +509,57 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
             ],
         )
         self.assertEqual(block_to_html_node(block3), parentNode3)
+
+    # test markdown_to_html_node
+    def test_markdown_to_html_renders(self):
+        block = """# This is the heading\n\n>This is a nice quote.\n>It is very nice indeed.\n\nThis is a paragraph with [a link](http://google.com), an image ![image alt text](http://google.com/image.png), some **bold** text and some *italic* text, as well as some `inline code` for good measure.\n\n```\ncode = "co" + "de"\nprint(code)\n```\n\n* Unordered list item 1\n* Unordered list item 2\n\n1. Ordered list item 1\n2. Ordered list item 2"""
+        parentNode = ParentNode(
+            "div",
+            [
+                LeafNode("h1", "This is the heading"),
+                LeafNode(
+                    "blockquote", "This is a nice quote.\nIt is very nice indeed."
+                ),
+                ParentNode(
+                    "p",
+                    [
+                        LeafNode(None, "This is a paragraph with "),
+                        LeafNode("a", "a link", {"href": "http://google.com"}),
+                        LeafNode(None, ", an image "),
+                        LeafNode(
+                            "img",
+                            "",
+                            {
+                                "src": "http://google.com/image.png",
+                                "alt": "image alt text",
+                            },
+                        ),
+                        LeafNode(None, ", some "),
+                        LeafNode("b", "bold"),
+                        LeafNode(None, " text and some "),
+                        LeafNode("i", "italic"),
+                        LeafNode(None, " text, as well as some "),
+                        LeafNode("code", "inline code"),
+                        LeafNode(None, " for good measure."),
+                    ],
+                ),
+                ParentNode(
+                    "pre", [LeafNode("code", 'code = "co" + "de"\nprint(code)')]
+                ),
+                ParentNode(
+                    "ul",
+                    [
+                        LeafNode("li", "Unordered list item 1"),
+                        LeafNode("li", "Unordered list item 2"),
+                    ],
+                ),
+                ParentNode(
+                    "ol",
+                    [
+                        LeafNode("li", "Ordered list item 1"),
+                        LeafNode("li", "Ordered list item 2"),
+                    ],
+                ),
+            ],
+        )
+        self.assertEqual(markdown_to_html_node(block), parentNode)
