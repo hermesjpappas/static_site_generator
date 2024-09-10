@@ -227,3 +227,20 @@ def block_to_html_node(block):
             text = re.sub(r"\d+\.\s", "", text)
             li_list.append(LeafNode("li", text, None))
         return ParentNode("ol", li_list, None)
+
+    elif block_type == "code":
+        block = block.replace("```", "").strip()
+        child = LeafNode("code", block, None)
+        return ParentNode("pre", [child], None)
+
+    elif block_type == "heading":
+        split = re.split(r"(\#{1,6})", block.strip())
+        filtered = list(filter(lambda x: x != "", split))
+        num = len(filtered[0])
+        text = filtered[1].strip()
+        return LeafNode(f"h{num}", text)
+
+    elif block_type == "paragraph":
+        text_nodes = text_to_textnodes(block)
+        html_nodes = list(map(text_node_to_html_node, text_nodes))
+        return ParentNode("p", html_nodes)

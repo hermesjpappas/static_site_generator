@@ -421,3 +421,67 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
             ],
         )
         self.assertEqual(block_to_html_node(block), parentNode)
+
+    def test_block_to_html_returns_code(self):
+        block = """```
+        some code here
+        and some more here
+        ```"""
+        parentNode = ParentNode(
+            "pre", [LeafNode("code", block.replace("```", "").strip(), None)]
+        )
+        self.assertEqual(block_to_html_node(block), parentNode)
+
+    def test_block_to_html_returns_heading(self):
+        block = "# I am an h1 heading"
+        self.assertEqual(
+            block_to_html_node(block), LeafNode("h1", "I am an h1 heading")
+        )
+        block2 = "## I am an h2 heading"
+        self.assertEqual(
+            block_to_html_node(block2), LeafNode("h2", "I am an h2 heading")
+        )
+        block3 = "### I am an h3 heading"
+        self.assertEqual(
+            block_to_html_node(block3), LeafNode("h3", "I am an h3 heading")
+        )
+        block4 = "#### I am an h4 heading"
+        self.assertEqual(
+            block_to_html_node(block4), LeafNode("h4", "I am an h4 heading")
+        )
+        block5 = "##### I am an h5 heading"
+        self.assertEqual(
+            block_to_html_node(block5), LeafNode("h5", "I am an h5 heading")
+        )
+        block6 = "###### I am an h6 heading"
+        self.assertEqual(
+            block_to_html_node(block6), LeafNode("h6", "I am an h6 heading")
+        )
+        # block7 = ("####### I am a false h7 heading",)
+        # self.assertEqual(
+        #     block_to_html_node(block7).to_html(), "<p>####### I am a false h7 heading</p>"
+        # )
+
+    def test_block_to_html_creates_proper_paragraphs(self):
+        block = "I am a paragraph with **bold** and *italic* words"
+        parentNode = ParentNode(
+            "p",
+            [
+                LeafNode(None, "I am a paragraph with "),
+                LeafNode("b", "bold"),
+                LeafNode(None, " and "),
+                LeafNode("i", "italic"),
+                LeafNode(None, " words"),
+            ],
+        )
+        self.assertEqual(block_to_html_node(block), parentNode)
+        block2 = "I am a paragraph with [a link](http://google.com)"
+        parentNode2 = ParentNode(
+            "p",
+            [
+                LeafNode(None, "I am a paragraph with "),
+                LeafNode("a", "a link", {"href": "http://google.com"}),
+            ],
+        )
+        self.assertEqual(block_to_html_node(block2), parentNode2)
+
