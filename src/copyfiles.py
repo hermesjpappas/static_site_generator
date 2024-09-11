@@ -18,7 +18,7 @@ def copy_files(src_path, dest_path):
     for file in source_files:
         new_src = os.path.join(src_path, file)
         new_dest = os.path.join(dest_path, file)
-        if os.path.isfile(os.path.join(src_path, file)):
+        if os.path.isfile(new_src):
             print("Copying from", new_src, "to", new_dest)
             shutil.copy(new_src, new_dest)
         else:
