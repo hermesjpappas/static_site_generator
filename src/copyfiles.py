@@ -3,9 +3,7 @@ import shutil
 
 
 def copy_files(src_path, dest_path):
-    if os.path.exists(src_path):
-        print("Copying from", src_path)
-    else:
+    if not os.path.exists(src_path):
         raise Exception("Source path does not exist")
 
     if os.path.exists(dest_path):
