@@ -1,7 +1,6 @@
-from textnode import TextNode
+from copyfiles import copy_files
 
 def main():
-  obj = TextNode("This is a text node", "bold", "https://www.boot.dev")
-  print(obj)
+  copy_files("../static/", "../public/")
 
 main()
