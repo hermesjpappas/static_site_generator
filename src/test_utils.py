@@ -531,9 +531,10 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
         parentNode = ParentNode(
             "div",
             [
-                LeafNode("h1", "This is the heading"),
-                LeafNode(
-                    "blockquote", "This is a nice quote.\nIt is very nice indeed."
+                ParentNode("h1", [LeafNode(None, "This is the heading")]),
+                ParentNode(
+                    "blockquote",
+                    [LeafNode(None, "This is a nice quote.\nIt is very nice indeed.")],
                 ),
                 ParentNode(
                     "p",
@@ -564,15 +565,15 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
                 ParentNode(
                     "ul",
                     [
-                        LeafNode("li", "Unordered list item 1"),
-                        LeafNode("li", "Unordered list item 2"),
+                        ParentNode("li", [LeafNode(None, "Unordered list item 1")]),
+                        ParentNode("li", [LeafNode(None, "Unordered list item 2")]),
                     ],
                 ),
                 ParentNode(
                     "ol",
                     [
-                        LeafNode("li", "Ordered list item 1"),
-                        LeafNode("li", "Ordered list item 2"),
+                        ParentNode("li", [LeafNode(None, "Ordered list item 1")]),
+                        ParentNode("li", [LeafNode(None, "Ordered list item 2")]),
                     ],
                 ),
             ],
