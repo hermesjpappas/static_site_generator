@@ -386,7 +386,9 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
         """
         self.assertEqual(
             block_to_html_node(block),
-            LeafNode("blockquote", "This is a quote\nwith multiple lines.", None),
+            ParentNode(
+                "blockquote", [LeafNode(None, "This is a quote\nwith multiple lines.")]
+            ),
         )
 
     def test_block_to_html_returns_unordered_list(self):
@@ -395,7 +397,10 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
         """
         parentNode = ParentNode(
             "ul",
-            [LeafNode("li", "Some item here"), LeafNode("li", "Some item there")],
+            [
+                ParentNode("li", [LeafNode(None, "Some item here")]),
+                ParentNode("li", [LeafNode(None, "Some item there")]),
+            ],
             None,
         )
         self.assertEqual(block_to_html_node(block), parentNode)
@@ -404,7 +409,10 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
         """
         parentNode = ParentNode(
             "ul",
-            [LeafNode("li", "Some item here"), LeafNode("li", "Some item there")],
+            [
+                ParentNode("li", [LeafNode(None, "Some item here")]),
+                ParentNode("li", [LeafNode(None, "Some item there")]),
+            ],
             None,
         )
         self.assertEqual(block_to_html_node(block2), parentNode)
@@ -417,9 +425,9 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
         parentNode = ParentNode(
             "ol",
             [
-                LeafNode("li", "Item here"),
-                LeafNode("li", "Item there"),
-                LeafNode("li", "Item further"),
+                ParentNode("li", [LeafNode(None, "Item here")]),
+                ParentNode("li", [LeafNode(None, "Item there")]),
+                ParentNode("li", [LeafNode(None, "Item further")]),
             ],
         )
         self.assertEqual(block_to_html_node(block), parentNode)
@@ -437,27 +445,33 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
     def test_block_to_html_returns_heading(self):
         block = "# I am an h1 heading"
         self.assertEqual(
-            block_to_html_node(block), LeafNode("h1", "I am an h1 heading")
+            block_to_html_node(block),
+            ParentNode("h1", [LeafNode(None, "I am an h1 heading")]),
         )
         block2 = "## I am an h2 heading"
         self.assertEqual(
-            block_to_html_node(block2), LeafNode("h2", "I am an h2 heading")
+            block_to_html_node(block2),
+            ParentNode("h2", [LeafNode(None, "I am an h2 heading")]),
         )
         block3 = "### I am an h3 heading"
         self.assertEqual(
-            block_to_html_node(block3), LeafNode("h3", "I am an h3 heading")
+            block_to_html_node(block3),
+            ParentNode("h3", [LeafNode(None, "I am an h3 heading")]),
         )
         block4 = "#### I am an h4 heading"
         self.assertEqual(
-            block_to_html_node(block4), LeafNode("h4", "I am an h4 heading")
+            block_to_html_node(block4),
+            ParentNode("h4", [LeafNode(None, "I am an h4 heading")]),
         )
         block5 = "##### I am an h5 heading"
         self.assertEqual(
-            block_to_html_node(block5), LeafNode("h5", "I am an h5 heading")
+            block_to_html_node(block5),
+            ParentNode("h5", [LeafNode(None, "I am an h5 heading")]),
         )
         block6 = "###### I am an h6 heading"
         self.assertEqual(
-            block_to_html_node(block6), LeafNode("h6", "I am an h6 heading")
+            block_to_html_node(block6),
+            ParentNode("h6", [LeafNode(None, "I am an h6 heading")]),
         )
         block7 = "####### I am a false h7 heading"
         self.assertEqual(
@@ -578,7 +592,7 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
         * This is an 
         * Unordered list"""
         self.assertEqual("Hello", extract_title(text2))
-    
+
     def test_extracts_from_markdown_h1_later(self):
         text3 = """Hello.
         

@@ -204,7 +204,9 @@ def block_to_html_node(block):
                 continue
             text += line.replace(">", "").strip() + "\n"
         text = text.strip()
-        return LeafNode("blockquote", text, None)
+        text_nodes = text_to_textnodes(text)
+        html_nodes = list(map(text_node_to_html_node, text_nodes))  
+        return ParentNode("blockquote", html_nodes)
 
     elif block_type == "unordered_list":
         lines = block.split("\n")
@@ -214,10 +216,14 @@ def block_to_html_node(block):
                 continue
             if line.strip().startswith("*"):
                 text = line.strip().replace("* ", "")
-                li_list.append(LeafNode("li", text, None))
+                text_nodes = text_to_textnodes(text)
+                html_nodes = list(map(text_node_to_html_node, text_nodes))  
+                li_list.append(ParentNode("li", html_nodes))
             elif line.strip().startswith("-"):
                 text = line.strip().replace("- ", "")
-                li_list.append(LeafNode("li", text, None))
+                text_nodes = text_to_textnodes(text)
+                html_nodes = list(map(text_node_to_html_node, text_nodes))  
+                li_list.append(ParentNode("li", html_nodes))
         return ParentNode("ul", li_list, None)
 
     elif block_type == "ordered_list":
@@ -228,7 +234,9 @@ def block_to_html_node(block):
                 continue
             text = line.strip()
             text = re.sub(r"\d+\.\s", "", text)
-            li_list.append(LeafNode("li", text, None))
+            text_nodes = text_to_textnodes(text)
+            html_nodes = list(map(text_node_to_html_node, text_nodes))  
+            li_list.append(ParentNode("li", html_nodes))
         return ParentNode("ol", li_list, None)
 
     elif block_type == "code":
@@ -243,7 +251,7 @@ def block_to_html_node(block):
         text = filtered[1].strip()
         text_nodes = text_to_textnodes(text)
         html_nodes = list(map(text_node_to_html_node, text_nodes)) 
-        return LeafNode(f"h{num}", text)
+        return ParentNode(f"h{num}", html_nodes)
 
     elif block_type == "paragraph":
         text_nodes = text_to_textnodes(block)
