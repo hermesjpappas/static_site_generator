@@ -205,7 +205,7 @@ def block_to_html_node(block):
             text += line.replace(">", "").strip() + "\n"
         text = text.strip()
         text_nodes = text_to_textnodes(text)
-        html_nodes = list(map(text_node_to_html_node, text_nodes))  
+        html_nodes = list(map(text_node_to_html_node, text_nodes))
         return ParentNode("blockquote", html_nodes)
 
     elif block_type == "unordered_list":
@@ -217,12 +217,12 @@ def block_to_html_node(block):
             if line.strip().startswith("*"):
                 text = line.strip().replace("* ", "")
                 text_nodes = text_to_textnodes(text)
-                html_nodes = list(map(text_node_to_html_node, text_nodes))  
+                html_nodes = list(map(text_node_to_html_node, text_nodes))
                 li_list.append(ParentNode("li", html_nodes))
             elif line.strip().startswith("-"):
                 text = line.strip().replace("- ", "")
                 text_nodes = text_to_textnodes(text)
-                html_nodes = list(map(text_node_to_html_node, text_nodes))  
+                html_nodes = list(map(text_node_to_html_node, text_nodes))
                 li_list.append(ParentNode("li", html_nodes))
         return ParentNode("ul", li_list, None)
 
@@ -235,7 +235,7 @@ def block_to_html_node(block):
             text = line.strip()
             text = re.sub(r"\d+\.\s", "", text)
             text_nodes = text_to_textnodes(text)
-            html_nodes = list(map(text_node_to_html_node, text_nodes))  
+            html_nodes = list(map(text_node_to_html_node, text_nodes))
             li_list.append(ParentNode("li", html_nodes))
         return ParentNode("ol", li_list, None)
 
@@ -250,7 +250,7 @@ def block_to_html_node(block):
         num = len(filtered[0])
         text = filtered[1].strip()
         text_nodes = text_to_textnodes(text)
-        html_nodes = list(map(text_node_to_html_node, text_nodes)) 
+        html_nodes = list(map(text_node_to_html_node, text_nodes))
         return ParentNode(f"h{num}", html_nodes)
 
     elif block_type == "paragraph":
@@ -279,6 +279,8 @@ def extract_title(markdown):
 
 
 def generate_page(from_path, template_path, dest_path):
+    if not os.path.exists(from_path):
+        raise Exception("From path does not exist")
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     md_file = open(from_path)
     markdown = md_file.read()
@@ -295,3 +297,22 @@ def generate_page(from_path, template_path, dest_path):
     final_file.close()
     shutil.copy("index.html", dest_path)
     os.remove("index.html")
+
+
+def generate_pages_recursive(from_path, template_path, dest_path):
+    if not os.path.exists(from_path):
+        raise Exception("From path does not exist")
+    if not os.path.exists(dest_path):
+        os.mkdir(dest_path)
+
+
+    source_files = os.listdir(from_path)
+
+    for file in source_files:
+        new_src = os.path.join(from_path, file)
+        new_dest = os.path.join(dest_path, file)
+        if os.path.isfile(new_src):
+            if file.split(".")[1] == "md":
+                generate_page(new_src, template_path, dest_path)
+        else:
+            generate_pages_recursive(new_src, template_path, new_dest)
