@@ -253,3 +253,13 @@ def markdown_to_html_node(markdown):
     for block in blocks:
         children.append(block_to_html_node(block))
     return ParentNode("div", children)
+
+def extract_title(markdown):
+    lines = markdown.split('\n')
+    for line in lines:
+        if line.strip().startswith("# "):
+            split = line.split("# ")
+            title = split[1].strip()
+            return title
+    
+    raise Exception("No title found")

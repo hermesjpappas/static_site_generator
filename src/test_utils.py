@@ -14,6 +14,7 @@ from utils import (
     block_to_block_type,
     block_to_html_node,
     markdown_to_html_node,
+    extract_title,
 )
 
 
@@ -563,3 +564,43 @@ This is a paragraph of text. It has some **bold** and *italic* words inside of i
             ],
         )
         self.assertEqual(markdown_to_html_node(block), parentNode)
+
+    # test extract_title
+    def test_extracts_from_single_line(self):
+        text = "# Hello"
+        self.assertEqual("Hello", extract_title(text))
+
+    def test_extracts_from_markdown_h1_first(self):
+        text2 = """# Hello
+        
+        Hello again.
+        
+        * This is an 
+        * Unordered list"""
+        self.assertEqual("Hello", extract_title(text2))
+    
+    def test_extracts_from_markdown_h1_later(self):
+        text3 = """Hello.
+        
+        * This is an
+        * Unordered list
+        
+        # Hello from later
+        
+        1. Ordered
+        2. List"""
+
+        self.assertEqual("Hello from later", extract_title(text3))
+
+    def test_raises_exception_when_no_h1(self):
+        text4 = """Hello.
+        
+        * This is markdown
+        * That has no h1 tag
+        
+        ```
+        code
+        ```
+        """
+        with self.assertRaisesRegex(Exception, "No title found"):
+            extract_title(text4)
