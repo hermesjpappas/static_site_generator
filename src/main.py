@@ -1,6 +1,6 @@
 import os
 from copyfiles import copy_files
-
+from utils import generate_page
 def main():
   # get the absolute path
   script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -10,5 +10,7 @@ def main():
   os.chdir(project_root)
 
   copy_files("static", "public")
+
+  generate_page("content/index.md")
 
 main()
