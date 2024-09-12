@@ -1,7 +1,9 @@
 from leafnode import LeafNode
 from textnode import TextNode
 from parentnode import ParentNode
+import shutil
 import re
+import os
 
 
 def text_node_to_html_node(text_node):
@@ -239,6 +241,8 @@ def block_to_html_node(block):
         filtered = list(filter(lambda x: x != "", split))
         num = len(filtered[0])
         text = filtered[1].strip()
+        text_nodes = text_to_textnodes(text)
+        html_nodes = list(map(text_node_to_html_node, text_nodes)) 
         return LeafNode(f"h{num}", text)
 
     elif block_type == "paragraph":
@@ -254,18 +258,32 @@ def markdown_to_html_node(markdown):
         children.append(block_to_html_node(block))
     return ParentNode("div", children)
 
+
 def extract_title(markdown):
-    lines = markdown.split('\n')
+    lines = markdown.split("\n")
     for line in lines:
         if line.strip().startswith("# "):
             split = line.split("# ")
             title = split[1].strip()
             return title
-    
+
     raise Exception("No title found")
+
 
 def generate_page(from_path, template_path, dest_path):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     md_file = open(from_path)
     markdown = md_file.read()
-    print(markdown)
+    template_file = open(template_path)
+    template_html = template_file.read()
+    title = extract_title(markdown)
+    html = markdown_to_html_node(markdown).to_html()
+    template_html = template_html.replace("{{ Title }}", title)
+    template_html = template_html.replace("{{ Content }}", html)
+    md_file.close()
+    template_file.close()
+    final_file = open("index.html", "w")
+    final_file.write(template_html)
+    final_file.close()
+    shutil.copy("index.html", dest_path)
+    os.remove("index.html")
